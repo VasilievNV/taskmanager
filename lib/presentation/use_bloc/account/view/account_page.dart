@@ -1,0 +1,75 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:taskmanager/core/constants/routes.dart';
+import 'package:taskmanager/domain/repository/Impl/account_repository.dart';
+import 'package:taskmanager/domain/use_case/account_case.dart';
+import 'package:taskmanager/presentation/ui_component/app_button.dart';
+import 'package:taskmanager/presentation/ui_component/app_loader.dart';
+import 'package:taskmanager/presentation/use_bloc/account/bloc/account_bloc.dart';
+import 'package:taskmanager/presentation/use_bloc/account/bloc/account_event.dart';
+import 'package:taskmanager/presentation/use_bloc/account/bloc/account_state.dart';
+import 'package:taskmanager/presentation/use_provider/theme_mode/notifier/theme_mode_notifier.dart';
+
+class AccountPage extends StatelessWidget {
+  const AccountPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return RepositoryProvider(
+      create: (context) => AccountCase(
+        repository: AccountRepository(FirebaseAuth.instance)
+      ),
+      child: BlocProvider(
+        create: (context) => AccountBloc(context.read<AccountCase>()),
+        child: BlocListener<AccountBloc, AccountState>(
+          listener: (context, state) {
+            if (state is AccountLoadingState) {
+              if (state.loading) {
+                AppLoader.show(context);
+              } else {
+                AppLoader.hide(context);
+              }
+            }
+
+            if (state is AccountSignOutState) {
+              context.goNamed(RouteNames.login);
+            }
+          },
+          child: AccountView()
+        ),
+      ),
+    );
+  }
+}
+
+class AccountView extends StatelessWidget {
+  const AccountView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.watch<ThemeModeNotifier>();
+    return Scaffold(
+      backgroundColor: theme.state.colorBackgroundPrimary,
+      appBar: AppBar(
+        title: Text("Account"),
+      ),
+      body: BlocBuilder<AccountBloc, AccountState>(
+        buildWhen: (previous, current) {
+          return current is! AccountSignOutState;
+        },
+        builder: (context, state) {
+          return Center(
+            child: AppButton.text(
+              title: "Sign-Out", 
+              onPressed: () {
+                context.read<AccountBloc>().add(AccountSignOutEvent());
+              }
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

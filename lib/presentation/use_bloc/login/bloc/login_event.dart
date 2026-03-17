@@ -7,6 +7,12 @@ class LoginEditEmailEvent extends LoginEvent {
   LoginEditEmailEvent(this.text);
 }
 
+class LoginObscurePasswordEvent extends LoginEvent {
+  final bool value;
+
+  LoginObscurePasswordEvent(this.value);
+}
+
 class LoginEditPasswordEvent extends LoginEvent {
   final String text;
 

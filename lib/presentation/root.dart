@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:taskmanager/core/constants/routes.dart';
 import 'package:taskmanager/presentation/use_provider/navigation_bar/view/navigation_bar.dart';
-import 'package:taskmanager/presentation/use_bloc/account/account_page.dart';
+import 'package:taskmanager/presentation/use_bloc/account/view/account_page.dart';
 import 'package:taskmanager/presentation/use_bloc/calendar/calendar_page.dart';
 import 'package:taskmanager/presentation/use_bloc/chat/chat_page.dart';
 import 'package:taskmanager/presentation/use_provider/navigation_bar/notifier/navigation_bar_notifier.dart';

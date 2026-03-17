@@ -40,7 +40,7 @@ class SignUpPage extends StatelessWidget {
               }
             }
 
-            if (state is SignUpSuccessState) {
+            if (state.status == SignUpStatus.success) {
               context.goNamed(RouteNames.home);
             }
           },
@@ -59,6 +59,7 @@ class SignUpView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.watch<ThemeModeNotifier>();
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: theme.state.colorBackgroundPrimary,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(
@@ -67,7 +68,7 @@ class SignUpView extends StatelessWidget {
         ),
         child: BlocBuilder<SignUpBloc, SignUpState>(
           buildWhen: (previous, current) {
-            return !(current is SignUpLoadingState || current is SignUpSuccessState);
+            return !(current is SignUpLoadingState || current.status == SignUpStatus.success);
           },
           builder: (context, state) {
             return Column(
@@ -114,31 +115,41 @@ class SignUpView extends StatelessWidget {
   }
 
   Widget _forms(BuildContext context, SignUpState state) {
+    final bloc = context.read<SignUpBloc>();
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         AppFormField.email(
           label: "Email",
           onChanged: (text) {
-            context.read<SignUpBloc>().add(SignUpEditEmailEvent(text));
+            bloc.add(SignUpEditEmailEvent(text));
           },
-          error: state is SignUpErrorState ? state.emailError : null,
+          error: state.emailError,
         ),
         const SizedBox(height: 20),
         AppFormField.password(
           label: "Password",
+          obscureText: state.obscureTextPassword,
           onChanged: (text) {
-            context.read<SignUpBloc>().add(SignUpEditPasswordEvent(text));
+            bloc.add(SignUpEditPasswordEvent(text));
           },
-          error: state is SignUpErrorState ? state.passwordError : null,
+          onTapIcon: (value) {
+            bloc.add(SignUpObscurePasswordEvent(value));
+          },
+          error: state.passwordError,
         ),
         const SizedBox(height: 20),
         AppFormField.password(
           label: "Confirm Password",
+          obscureText: state.obscureTextConfirm,
           onChanged: (text) {
-            context.read<SignUpBloc>().add(SignUpEditConfirmEvent(text));
+            bloc.add(SignUpEditConfirmEvent(text));
           },
-          error: state is SignUpErrorState ? state.confirmPasswordError : null,
+          onTapIcon: (value) {
+            bloc.add(SignUpObscureConfirmEvent(value));
+          },
+          error: state.confirmPasswordError,
         ),
       ],
     );

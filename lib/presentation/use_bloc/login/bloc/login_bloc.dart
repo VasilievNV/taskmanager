@@ -8,7 +8,7 @@ import 'package:taskmanager/presentation/use_bloc/login/bloc/login_state.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final LoginCase login;
 
-  LoginBloc(this.login) : super(LoginInitState()) {
+  LoginBloc(this.login) : super(LoginState()) {
     on<LoginEditEmailEvent>((event, emit) {
       login.emailText = event.text;
     });
@@ -17,11 +17,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       login.passwordText = event.text;
     });
 
+    on<LoginObscurePasswordEvent>((event, emit) {
+      emit(state.copyWith(obscureText: event.value));
+    });
+
     on<LoginWithPasswordEvent>((event, emit) async {
       final (emailError, passwordError, isError) = login.validateForms();
 
       if (isError) {
-        emit(LoginErrorState(
+        emit(state.copyWith(
+          status: LoginStatus.error,
           emailError: emailError,
           passwordError: passwordError
         ));
@@ -30,19 +35,21 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       emit(LoginLoadingState(true));
 
-      final credential = await login.withPassword();
+      final credential = await login.repository.loginWithPassword(login.emailText, login.passwordText);
 
       emit(LoginLoadingState(false));
 
       if (credential.user != null) {
-        emit(LoginSuccessState());
+        emit(state.copyWith(status: LoginStatus.success));
       } else {
+
         Console.log("Login error");
         Console.log("code: ${credential.error?.code}");
         Console.log("message: ${credential.error?.code}");
-        emit(LoginErrorState(
-          code: credential.error?.code,
-          message: credential.error?.message
+
+        emit(state.copyWith(
+          status: LoginStatus.error,
+          emailError: credential.error?.message,
         ));
       }
     });

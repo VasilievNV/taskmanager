@@ -1,5 +1,4 @@
 import 'package:taskmanager/core/utils/extensions.dart';
-import 'package:taskmanager/domain/entity/auth_credential.dart';
 import '/domain/repository/interface/i_login_repository.dart';
 
 class LoginCase {
@@ -9,10 +8,6 @@ class LoginCase {
   String passwordText = "";
 
   LoginCase({required this.repository});
-
-  Future<AppAuthCredential> withPassword() async {
-    return await repository.loginWithPassword(emailText, passwordText);
-  }
 
   (String? emailError, String? passwordError, bool isError) validateForms() {
     String? emailError;

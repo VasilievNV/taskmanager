@@ -25,9 +25,31 @@ class SignUpRepository implements ISignUpRepository {
     } on FirebaseAuthException catch (error) {
       Console.log(error.code);
 
-      authError = AppError(message: error.message);
+      switch (error.code) {
+        case "email-already-in-use":
+          authError = AppError(
+            code: 1,
+            message: "Email is exist"
+          );
+          break;
+        case "*weak-password":
+          authError = AppError(
+            code: 1,
+            message: "Password is too weak"
+          );
+          break;
+        default:
+          authError = AppError(
+            code: 1,
+            message: "Unexpected error. Please try later"
+          );
+          break;
+      }
     } catch (error) {
-      authError = AppError(message: "Unexpected error. Please try later");
+      authError = AppError(
+        code: 1,
+        message: "Unexpected error. Please try later"
+      );
     }
     
     return AppAuthCredential(error: authError);

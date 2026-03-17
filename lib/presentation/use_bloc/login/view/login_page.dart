@@ -35,7 +35,9 @@ class LoginPage extends StatelessWidget {
               } else {
                 AppLoader.hide(context);
               }
-            } else if (state is LoginSuccessState) {
+            }
+
+            if (state.status == LoginStatus.success) {
               context.goNamed(RouteNames.home);
             }
           },
@@ -55,6 +57,7 @@ class LoginView extends StatelessWidget {
     final theme = context.watch<ThemeModeNotifier>();
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: theme.state.colorBackgroundPrimary,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(
@@ -63,7 +66,7 @@ class LoginView extends StatelessWidget {
         ),
         child: BlocBuilder<LoginBloc, LoginState>(
           buildWhen: (previous, current) {
-            return !(current is LoginLoadingState || current is LoginSuccessState);
+            return !(current.status == LoginStatus.success || current is LoginLoadingState);
           },
           builder: (context, state) {
             return Column(
@@ -110,24 +113,28 @@ class LoginView extends StatelessWidget {
   }
 
   Widget _forms(BuildContext context, LoginState state) {
-    //final theme = context.watch<ThemeModeNotifier>().state;
+    final loginBloc = context.read<LoginBloc>();
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         AppFormField.email(
           label: "Email",
           onChanged: (text) {
-            context.read<LoginBloc>().add(LoginEditEmailEvent(text));
+            loginBloc.add(LoginEditEmailEvent(text));
           },
-          error: state is LoginErrorState ? state.emailError : null,
+          error: state.emailError,
         ),
         const SizedBox(height: 20),
         AppFormField.password(
           label: "Password",
+          obscureText: state.obscureText,
           onChanged: (text) {
-            context.read<LoginBloc>().add(LoginEditPasswordEvent(text));
+            loginBloc.add(LoginEditPasswordEvent(text));
           },
-          error: state is LoginErrorState ? state.passwordError : null,
+          onTapIcon: (value) {
+            loginBloc.add(LoginObscurePasswordEvent(value));
+          },
+          error: state.passwordError,
         ),
       ],
     );

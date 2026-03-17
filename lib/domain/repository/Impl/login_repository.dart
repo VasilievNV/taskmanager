@@ -8,7 +8,7 @@ import 'package:taskmanager/domain/repository/interface/i_login_repository.dart'
 class LoginRepository implements ILoginRepository {
   final FirebaseAuth instance;
 
-  LoginRepository({required this.instance});
+  const LoginRepository({required this.instance});
 
   @override
   Future<AppAuthCredential> loginWithPassword(String email, String password) async {
@@ -25,9 +25,32 @@ class LoginRepository implements ILoginRepository {
     } on FirebaseAuthException catch (error) {
       Console.log(error.code);
 
-      authError = AppError(message: error.message);
+      switch (error.code) {
+        case "invalid-credential":
+          authError = AppError(
+            code: 1,
+            message: "Incorrect email or password"
+          );
+          break;
+        case "user-disabled":
+          authError = AppError(
+            code: 1,
+            message: "User disabled"
+          );
+          break;
+        default:
+          authError = AppError(
+            code: 1,
+            message: "Unexpected error. Please try later"
+          );
+          break;
+      }
+  
     } catch (error) {
-      authError = AppError(message: "Unexpected error. Please try later");
+      authError = AppError(
+        code: 1,
+        message: "Unexpected error. Please try later"
+      );
     }
     
     return AppAuthCredential(error: authError);

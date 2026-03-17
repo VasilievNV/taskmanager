@@ -7,7 +7,7 @@ import 'package:taskmanager/presentation/use_bloc/sign_up/bloc/sign_up_state.dar
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   final SignUpCase signUp;
 
-  SignUpBloc(this.signUp) : super(SignUpInitState()) {
+  SignUpBloc(this.signUp) : super(SignUpState()) {
     on<SignUpEditEmailEvent>((event, emit) {
       signUp.emailText = event.text;
     });
@@ -24,7 +24,8 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       final (emailError, passwordError, confirmError, isError) = signUp.validateForms();
 
       if (isError) {
-        emit(SignUpErrorState(
+        emit(state.copyWith(
+          status: SignUpStatus.error,
           emailError: emailError,
           passwordError: passwordError,
           confirmPasswordError: confirmError
@@ -34,16 +35,19 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
 
       emit(SignUpLoadingState(true));
 
-      final credential = await signUp.withPassword();
+      final credential = await signUp.repository.signUpWithPassword(
+        signUp.emailText,
+        signUp.passwordText,
+        signUp.confirmPasswordText
+      );
 
       emit(SignUpLoadingState(false));
 
       if (credential.user != null) {
-        emit(SignUpSuccessState());
+        emit(state.copyWith(status: SignUpStatus.success));
       } else {
-        emit(SignUpErrorState(
-          code: credential.error?.code,
-          message: credential.error?.message
+        emit(state.copyWith(
+          emailError: credential.error?.message
         ));
       }
     });
