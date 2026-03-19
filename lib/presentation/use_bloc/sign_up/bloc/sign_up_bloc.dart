@@ -1,31 +1,41 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskmanager/core/utils/extensions.dart';
 import 'package:taskmanager/domain/use_case/sign_up_case.dart';
 import 'package:taskmanager/presentation/use_bloc/sign_up/bloc/sign_up_event.dart';
 import 'package:taskmanager/presentation/use_bloc/sign_up/bloc/sign_up_state.dart';
 
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
-  final SignUpCase signUp;
+  final SignUpUseCase useCase;
 
-  SignUpBloc(this.signUp) : super(SignUpState()) {
+  SignUpBloc(this.useCase) : super(SignUpState()) {
     on<SignUpEditEmailEvent>((event, emit) {
-      signUp.emailText = event.text;
+      emit(state.copyWith(
+        status: ESignUpStatus.editing,
+        emailText: event.text
+      ));
     });
 
     on<SignUpEditPasswordEvent>((event, emit) {
-      signUp.passwordText = event.text;
+      emit(state.copyWith(
+        status: ESignUpStatus.editing,
+        passwordText: event.text
+      ));
     });
 
     on<SignUpEditConfirmEvent>((event, emit) {
-      signUp.confirmPasswordText = event.text;
+      emit(state.copyWith(
+        status: ESignUpStatus.editing,
+        confirmText: event.text
+      ));
     });
 
     on<SignUpWithPasswordEvent>((event, emit) async {
-      final (emailError, passwordError, confirmError, isError) = signUp.validateForms();
+      final (emailError, passwordError, confirmError, isError) = _validateForms();
 
       if (isError) {
         emit(state.copyWith(
-          status: SignUpStatus.error,
+          status: ESignUpStatus.error,
           emailError: emailError,
           passwordError: passwordError,
           confirmPasswordError: confirmError
@@ -33,23 +43,53 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         return;
       }
 
-      emit(SignUpLoadingState(true));
+      emit(state.copyWith(
+        status: ESignUpStatus.loading,
+        isLoading: true
+      ));
 
-      final credential = await signUp.repository.signUpWithPassword(
-        signUp.emailText,
-        signUp.passwordText,
-        signUp.confirmPasswordText
-      );
+      final credential = await useCase.callWithPassword(state.emailText, state.passwordText, state.confirmText);
 
-      emit(SignUpLoadingState(false));
+      emit(state.copyWith(
+        status: ESignUpStatus.loading,
+        isLoading: false
+      ));
 
       if (credential.user != null) {
-        emit(state.copyWith(status: SignUpStatus.success));
+        emit(state.copyWith(status: ESignUpStatus.success));
       } else {
         emit(state.copyWith(
+          status: ESignUpStatus.error,
           emailError: credential.error?.message
         ));
       }
     });
+  }
+
+  (String? emailError, String? passwordError, String? confirmError, bool isError) _validateForms() {
+    String? emailError;
+    String? passwordError;
+    String? confirmError;
+    bool isError = false;
+
+    if (state.emailText.isEmpty) {
+      emailError = "Required";
+    } else if (!state.emailText.isEmail) {
+      emailError = "InvalidEmail";
+    }
+
+    if (state.passwordText.isEmpty) {
+      passwordError = "Required";
+    } 
+
+    if (state.confirmText.isEmpty) {
+      confirmError = "Required";
+    } else if (state.passwordText != state.confirmText) {
+      confirmError = "Passwords don't match";
+    }
+
+    isError = emailError != null || passwordError != null || confirmError != null;
+
+    return (emailError, passwordError, confirmError, isError);
   }
 }

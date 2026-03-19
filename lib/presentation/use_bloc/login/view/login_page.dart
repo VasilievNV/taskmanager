@@ -6,13 +6,13 @@ import 'package:go_router/go_router.dart';
 import 'package:taskmanager/core/constants/routes.dart';
 import 'package:taskmanager/domain/repository/Impl/login_repository.dart';
 import 'package:taskmanager/domain/use_case/login_case.dart';
-import 'package:taskmanager/presentation/ui_component/app_loader.dart';
 import 'package:taskmanager/presentation/use_bloc/login/bloc/login_state.dart';
 import 'package:taskmanager/presentation/use_bloc/login/bloc/login_bloc.dart';
 import 'package:taskmanager/presentation/ui_component/app_button.dart';
 import 'package:taskmanager/presentation/ui_component/app_input.dart';
 import 'package:taskmanager/presentation/use_bloc/login/bloc/login_event.dart';
 import 'package:taskmanager/core/src/app_style.dart';
+import 'package:taskmanager/presentation/use_provider/app_loader.dart/notifier/app_loader_provider.dart';
 import 'package:taskmanager/presentation/use_provider/theme_mode/notifier/theme_mode_notifier.dart';
 
 
@@ -22,20 +22,14 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
-      create: (BuildContext context) => LoginCase(
+      create: (BuildContext context) => LoginUseCase(
         repository: LoginRepository(instance: FirebaseAuth.instance)
       ),
       child: BlocProvider(
-        create: (context) => LoginBloc(context.read<LoginCase>()),
+        create: (context) => LoginBloc(context.read<LoginUseCase>()),
         child: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
-            if (state is LoginLoadingState) {
-              if (state.loading) {
-                AppLoader.show(context);
-              } else {
-                AppLoader.hide(context);
-              }
-            }
+            context.read<AppLoaderNotifier>().setState(state.isLoading);
 
             if (state.status == LoginStatus.success) {
               context.goNamed(RouteNames.home);
@@ -66,7 +60,8 @@ class LoginView extends StatelessWidget {
         ),
         child: BlocBuilder<LoginBloc, LoginState>(
           buildWhen: (previous, current) {
-            return !(current.status == LoginStatus.success || current is LoginLoadingState);
+            return !(current.status == LoginStatus.success || current.status == LoginStatus.editing || 
+              current.status == LoginStatus.loading);
           },
           builder: (context, state) {
             return Column(
@@ -161,7 +156,7 @@ class LoginView extends StatelessWidget {
           title: "Forget password?",
           color: theme.colorTextLink,
           onPressed: () {
-            
+            context.goNamed(RouteNames.resetPassword);
           }
         ),
         const SizedBox(height: 25),

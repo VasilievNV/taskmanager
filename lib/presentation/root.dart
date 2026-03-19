@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:taskmanager/core/constants/routes.dart';
-import 'package:taskmanager/presentation/use_provider/navigation_bar/view/navigation_bar.dart';
+import 'package:taskmanager/presentation/use_bloc/reset_password/view/reset_password_page.dart';
+import 'package:taskmanager/presentation/use_provider/app_loader.dart/notifier/app_loader_provider.dart';
+import 'package:taskmanager/presentation/use_provider/app_loader.dart/view/app_loader_wrapper.dart';
+import 'package:taskmanager/presentation/ui_component/navigation_bar.dart';
 import 'package:taskmanager/presentation/use_bloc/account/view/account_page.dart';
 import 'package:taskmanager/presentation/use_bloc/calendar/calendar_page.dart';
 import 'package:taskmanager/presentation/use_bloc/chat/chat_page.dart';
-import 'package:taskmanager/presentation/use_provider/navigation_bar/notifier/navigation_bar_notifier.dart';
 import 'package:taskmanager/presentation/use_provider/theme_mode/notifier/theme_mode_notifier.dart';
 import 'use_bloc/login/view/login_page.dart';
 import 'use_bloc/home/home_page.dart';
@@ -24,8 +26,8 @@ class Root extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => NavigationBarNotifier()),
-        ChangeNotifierProvider(create: (context) => ThemeModeNotifier())
+        ChangeNotifierProvider(create: (context) => ThemeModeNotifier()),
+        ChangeNotifierProvider(create: (context) => AppLoaderNotifier())
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
@@ -36,6 +38,12 @@ class Root extends StatelessWidget {
             dynamicSchemeVariant: DynamicSchemeVariant.monochrome
           ),
         ),
+        builder: (context, child) {
+          return GestureDetector(
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: AppLoaderWrapper(child: child)
+          );
+        },
         routerConfig: routerConfig,
       ),
     );
@@ -48,22 +56,19 @@ final GoRouter routerConfig = GoRouter(
   redirect: (context, state) async {
     final user = FirebaseAuth.instance.currentUser;
   
-    // 1. Проверяем, на «публичной» ли мы странице (логин или регистрация)
     final isLoggingIn = state.matchedLocation == '/login';
     final isSigningUp = state.matchedLocation == '/sign_in';
-    final isAuthPage = isLoggingIn || isSigningUp;
+    final isResetPassword = state.matchedLocation == '/login/reset_password';
+    final isAuthPage = isLoggingIn || isSigningUp || isResetPassword;
 
-    // 2. Если юзера нет и он НЕ на странице входа — гоним на логин
     if (user == null) {
       return isAuthPage ? null : "/login";
     }
 
-    // 3. Если юзер ЗАЛОГИНЕН и зачем-то зашел на логин/регистрацию — гоним домой
     if (isAuthPage) {
       return "/home";
     }
 
-    // В остальных случаях (юзер есть и идет на защищенный роут) — всё ок
     return null;
   },
   routes: [
@@ -76,7 +81,19 @@ final GoRouter routerConfig = GoRouter(
           child: const LoginPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) => child,
         );
-      }
+      },
+      routes: [
+        GoRoute(
+          name: RouteNames.resetPassword,
+          path: "/reset_password",
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              child: const ResetPasswordPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) => child,
+            );
+          },
+        )
+      ]
     ),
     GoRoute(
       name: RouteNames.signUp,
@@ -92,29 +109,40 @@ final GoRouter routerConfig = GoRouter(
     ShellRoute(
       navigatorKey: _shellNavigatorKey,
       pageBuilder: (context, state, child) {
-        final navBar = context.watch<NavigationBarNotifier>();
         final theme = context.watch<ThemeModeNotifier>();
+
+        final String location = state.uri.toString();
+        
+        int currentIndex = 0;
+        
+        if (location.startsWith('/calendar')) {
+          currentIndex = 1;
+        } else if (location.startsWith('/chat')) {
+          currentIndex = 2;
+        } else if (location.startsWith('/account')) {
+          currentIndex = 3;
+        }
 
         return CustomTransitionPage(
           child: Scaffold(
             body: child,
             bottomNavigationBar: AppNavigationBar(
               backgroundColor: theme.state.colorBackgroundPrimary,
-              selectedIndex: navBar.state.index,
+              selectedIndex: currentIndex,
               onSelected: (index) {
                 switch (index) {
-                  case 0:
-                    navBar.setState(index);
-                    context.goNamed(RouteNames.home);
-                  case 1:
-                    navBar.setState(index);
-                    context.goNamed(RouteNames.calendar);
-                  case 2:
-                    context.pushNamed(RouteNames.chat);
-                  case 3:
-                    context.pushNamed(RouteNames.account);
-                  default:
-                    throw Exception("PAGE NOT FOUND!");    
+                  case 0: 
+                    context.goNamed(RouteNames.home); 
+                    break;
+                  case 1: 
+                    context.goNamed(RouteNames.calendar); 
+                    break;
+                  case 2: 
+                    context.goNamed(RouteNames.chat); 
+                    break;
+                  case 3: 
+                    context.goNamed(RouteNames.account); 
+                    break;
                 }
               },
             ),
@@ -145,29 +173,29 @@ final GoRouter routerConfig = GoRouter(
             );
           },
         ),
+        GoRoute(
+          name: RouteNames.chat,
+          path: "/chat",
+          //builder: (context, stage) => const ChatPage()
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              child: const ChatPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) => child,
+            );
+          },
+        ),
+        GoRoute(
+          name: RouteNames.account,
+          path: "/account",
+          //builder: (context, stage) => const AccountPage()
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              child: const AccountPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) => child,
+            );
+          },
+        ),
       ]
-    ),
-    GoRoute(
-      name: RouteNames.chat,
-      path: "/chat",
-      //builder: (context, stage) => const ChatPage()
-      pageBuilder: (context, state) {
-        return CustomTransitionPage(
-          child: const ChatPage(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) => child,
-        );
-      },
-    ),
-    GoRoute(
-      name: RouteNames.account,
-      path: "/account",
-      //builder: (context, stage) => const AccountPage()
-      pageBuilder: (context, state) {
-        return CustomTransitionPage(
-          child: const AccountPage(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) => child,
-        );
-      },
     ),
   ]
 );

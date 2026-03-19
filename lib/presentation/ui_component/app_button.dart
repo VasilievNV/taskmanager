@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class AppButton {
   static Widget primary({
-    String? title,
+    required String title,
     bool isExpand = false,
     Color? backgroundColor,
     Color? textColor,
@@ -28,7 +28,7 @@ class AppButton {
         elevation: 0,
         onPressed: onPressed,
         label: Text(
-          title ?? "",
+          title,
           style: TextStyle(
             color: textColor
           ),

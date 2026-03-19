@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:taskmanager/core/constants/routes.dart';
 import 'package:taskmanager/domain/repository/Impl/sign_up_repository.dart';
 import 'package:taskmanager/domain/use_case/sign_up_case.dart';
@@ -10,7 +11,7 @@ import 'package:taskmanager/presentation/ui_component/app_button.dart';
 import 'package:taskmanager/presentation/ui_component/app_input.dart';
 import 'package:taskmanager/core/src/app_style.dart';
 import 'package:taskmanager/core/src/colors.dart';
-import 'package:taskmanager/presentation/ui_component/app_loader.dart';
+import 'package:taskmanager/presentation/use_provider/app_loader.dart/notifier/app_loader_provider.dart';
 import 'package:taskmanager/presentation/use_provider/theme_mode/notifier/theme_mode_notifier.dart';
 import 'package:taskmanager/presentation/use_bloc/sign_up/bloc/sign_up_bloc.dart';
 import 'package:taskmanager/presentation/use_bloc/sign_up/bloc/sign_up_event.dart';
@@ -23,24 +24,18 @@ class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
-      create: (context) => SignUpCase(
+      create: (context) => SignUpUseCase(
         repository: SignUpRepository(instance: FirebaseAuth.instance)
       ),
       child: BlocProvider(
         create: (context) => SignUpBloc(
-          context.read<SignUpCase>()
+          context.read<SignUpUseCase>()
         ),
         child: BlocListener<SignUpBloc, SignUpState>(
           listener: (context, state) {
-            if (state is SignUpLoadingState) {
-              if (state.loading) {
-                AppLoader.show(context);
-              } else {
-                AppLoader.hide(context);
-              }
-            }
+            context.read<AppLoaderNotifier>().setState(state.isLoading);
 
-            if (state.status == SignUpStatus.success) {
+            if (state.status == ESignUpStatus.success) {
               context.goNamed(RouteNames.home);
             }
           },
@@ -68,7 +63,8 @@ class SignUpView extends StatelessWidget {
         ),
         child: BlocBuilder<SignUpBloc, SignUpState>(
           buildWhen: (previous, current) {
-            return !(current is SignUpLoadingState || current.status == SignUpStatus.success);
+            return !(current.status == ESignUpStatus.editing || 
+              current.status == ESignUpStatus.loading || current.status == ESignUpStatus.success);
           },
           builder: (context, state) {
             return Column(

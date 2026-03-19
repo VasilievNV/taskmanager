@@ -6,10 +6,10 @@ import 'package:taskmanager/core/constants/routes.dart';
 import 'package:taskmanager/domain/repository/Impl/account_repository.dart';
 import 'package:taskmanager/domain/use_case/account_case.dart';
 import 'package:taskmanager/presentation/ui_component/app_button.dart';
-import 'package:taskmanager/presentation/ui_component/app_loader.dart';
 import 'package:taskmanager/presentation/use_bloc/account/bloc/account_bloc.dart';
 import 'package:taskmanager/presentation/use_bloc/account/bloc/account_event.dart';
 import 'package:taskmanager/presentation/use_bloc/account/bloc/account_state.dart';
+import 'package:taskmanager/presentation/use_provider/app_loader.dart/notifier/app_loader_provider.dart';
 import 'package:taskmanager/presentation/use_provider/theme_mode/notifier/theme_mode_notifier.dart';
 
 class AccountPage extends StatelessWidget {
@@ -26,11 +26,7 @@ class AccountPage extends StatelessWidget {
         child: BlocListener<AccountBloc, AccountState>(
           listener: (context, state) {
             if (state is AccountLoadingState) {
-              if (state.loading) {
-                AppLoader.show(context);
-              } else {
-                AppLoader.hide(context);
-              }
+              context.read<AppLoaderNotifier>().setState(state.loading);
             }
 
             if (state is AccountSignOutState) {

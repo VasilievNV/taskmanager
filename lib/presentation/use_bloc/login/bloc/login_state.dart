@@ -1,9 +1,12 @@
 import 'package:equatable/equatable.dart';
 
-enum LoginStatus { initial, error, success }
+enum LoginStatus { initial, editing, loading, error, success }
 
 
 class LoginState extends Equatable {
+  final String emailText;
+  final String passwordText;
+  final bool isLoading;
   final bool obscureText;
   final LoginStatus status;
   final String? emailError;
@@ -11,6 +14,9 @@ class LoginState extends Equatable {
   final String? errorMessage;
 
   const LoginState({
+    this.emailText = "",
+    this.passwordText = "",
+    this.isLoading = false,
     this.obscureText = true,
     this.status = LoginStatus.initial,
     this.emailError,
@@ -19,6 +25,9 @@ class LoginState extends Equatable {
   });
 
   LoginState copyWith({
+    String? emailText,
+    String? passwordText,
+    bool? isLoading,
     bool? obscureText,
     LoginStatus? status,
     String? emailError,
@@ -26,6 +35,9 @@ class LoginState extends Equatable {
     String? errorMessage,
   }) {
     return LoginState(
+      emailText: emailText ?? this.emailText,
+      passwordText: passwordText ?? this.passwordText,
+      isLoading: isLoading ?? this.isLoading,
       obscureText: obscureText ?? this.obscureText,
       status: status ?? this.status,
       emailError: emailError,
@@ -35,15 +47,15 @@ class LoginState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [obscureText, emailError, passwordError, errorMessage];
-}
-
-class LoginLoadingState extends LoginState {
-  final bool loading;
-
-  const LoginLoadingState(this.loading);
-
-  @override
-  List<Object?> get props => [loading, ...super.props];
+  List<Object?> get props => [
+    emailText,
+    passwordText,
+    obscureText,
+    status,
+    isLoading,
+    emailError, 
+    passwordError, 
+    errorMessage
+  ];
 }
 
