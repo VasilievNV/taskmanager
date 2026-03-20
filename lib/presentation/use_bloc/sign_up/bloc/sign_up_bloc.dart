@@ -1,14 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskmanager/core/utils/extensions.dart';
-import 'package:taskmanager/domain/use_case/sign_up_case.dart';
+import 'package:taskmanager/domain/use_case/sign_up_with_email_use_case.dart';
 import 'package:taskmanager/presentation/use_bloc/sign_up/bloc/sign_up_event.dart';
 import 'package:taskmanager/presentation/use_bloc/sign_up/bloc/sign_up_state.dart';
 
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
-  final SignUpUseCase useCase;
+  final SignUpWithEmailUseCase signUpWithEmailUseCase;
 
-  SignUpBloc(this.useCase) : super(SignUpState()) {
+  SignUpBloc({
+    required this.signUpWithEmailUseCase
+  }) : super(SignUpState()) {
     on<SignUpEditEmailEvent>((event, emit) {
       emit(state.copyWith(
         status: ESignUpStatus.editing,
@@ -48,7 +50,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         isLoading: true
       ));
 
-      final credential = await useCase.callWithPassword(state.emailText, state.passwordText, state.confirmText);
+      final credential = await signUpWithEmailUseCase.call(state.emailText, state.passwordText, state.confirmText);
 
       emit(state.copyWith(
         status: ESignUpStatus.loading,

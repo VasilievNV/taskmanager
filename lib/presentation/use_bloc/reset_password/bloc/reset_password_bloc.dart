@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskmanager/core/utils/extensions.dart';
-import 'package:taskmanager/domain/use_case/reset_password_case.dart';
+import 'package:taskmanager/domain/use_case/reset_password_use_case.dart';
 import 'package:taskmanager/presentation/use_bloc/reset_password/bloc/reset_password_event.dart';
 import 'package:taskmanager/presentation/use_bloc/reset_password/bloc/reset_password_state.dart';
 

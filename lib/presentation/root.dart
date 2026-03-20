@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:taskmanager/core/constants/routes.dart';
+import 'package:taskmanager/domain/repository/Impl/auth_repository.dart';
+import 'package:taskmanager/domain/repository/interface/i_auth_repository.dart';
 import 'package:taskmanager/presentation/use_bloc/reset_password/view/reset_password_page.dart';
 import 'package:taskmanager/presentation/use_provider/app_loader.dart/notifier/app_loader_provider.dart';
 import 'package:taskmanager/presentation/use_provider/app_loader.dart/view/app_loader_wrapper.dart';
@@ -24,27 +27,34 @@ class Root extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return MultiRepositoryProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ThemeModeNotifier()),
-        ChangeNotifierProvider(create: (context) => AppLoaderNotifier())
-      ],
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        themeAnimationCurve: Curves.decelerate,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.white,
-            dynamicSchemeVariant: DynamicSchemeVariant.monochrome
-          ),
+        RepositoryProvider<IAuthRepository>(
+          create: (context) => AuthRepository(instance: FirebaseAuth.instance),
         ),
-        builder: (context, child) {
-          return GestureDetector(
-            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-            child: AppLoaderWrapper(child: child)
-          );
-        },
-        routerConfig: routerConfig,
+      ],
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => ThemeModeNotifier()),
+          ChangeNotifierProvider(create: (context) => AppLoaderNotifier())
+        ],
+        child: MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          themeAnimationCurve: Curves.decelerate,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.white,
+              dynamicSchemeVariant: DynamicSchemeVariant.monochrome
+            ),
+          ),
+          builder: (context, child) {
+            return GestureDetector(
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              child: AppLoaderWrapper(child: child)
+            );
+          },
+          routerConfig: routerConfig,
+        ),
       ),
     );
   }

@@ -1,14 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskmanager/core/utils/extensions.dart';
-import 'package:taskmanager/domain/use_case/login_case.dart';
+import 'package:taskmanager/domain/use_case/login_with_email_use_case.dart';
 import 'package:taskmanager/presentation/use_bloc/login/bloc/login_event.dart';
 import 'package:taskmanager/presentation/use_bloc/login/bloc/login_state.dart';
 
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  final LoginUseCase useCase;
+  final LoginWithEmailUseCase loginWithEmailUseCase;
 
-  LoginBloc(this.useCase) : super(LoginState()) {
+  LoginBloc({
+    required this.loginWithEmailUseCase
+  }) : super(LoginState()) {
     on<LoginEditEmailEvent>((event, emit) {
       emit(state.copyWith(
         status: LoginStatus.editing,
@@ -47,7 +49,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         isLoading: true
       ));
 
-      final credential = await useCase.callWithPassword(state.emailText, state.passwordText);
+      final credential = await loginWithEmailUseCase.call(state.emailText, state.passwordText);
 
       emit(state.copyWith(
         status: LoginStatus.loading,

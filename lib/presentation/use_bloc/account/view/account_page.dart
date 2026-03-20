@@ -1,10 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taskmanager/core/constants/routes.dart';
-import 'package:taskmanager/domain/repository/Impl/account_repository.dart';
-import 'package:taskmanager/domain/use_case/account_case.dart';
+import 'package:taskmanager/domain/repository/interface/i_auth_repository.dart';
+import 'package:taskmanager/domain/use_case/sign_out_use_case.dart';
 import 'package:taskmanager/presentation/ui_component/app_button.dart';
 import 'package:taskmanager/presentation/use_bloc/account/bloc/account_bloc.dart';
 import 'package:taskmanager/presentation/use_bloc/account/bloc/account_event.dart';
@@ -17,12 +16,18 @@ class AccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (context) => AccountCase(
-        repository: AccountRepository(FirebaseAuth.instance)
-      ),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(
+          create: (context) => SignOutUseCase(
+            repository: context.read<IAuthRepository>()
+          )
+        )
+      ],
       child: BlocProvider(
-        create: (context) => AccountBloc(context.read<AccountCase>()),
+        create: (context) => AccountBloc(
+          signOutUseCase: context.read<SignOutUseCase>()
+        ),
         child: BlocListener<AccountBloc, AccountState>(
           listener: (context, state) {
             if (state is AccountLoadingState) {

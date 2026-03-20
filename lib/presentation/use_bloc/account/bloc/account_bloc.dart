@@ -1,14 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taskmanager/domain/use_case/account_case.dart';
+import 'package:taskmanager/domain/use_case/sign_out_use_case.dart';
 import 'package:taskmanager/presentation/use_bloc/account/bloc/account_event.dart';
 import 'package:taskmanager/presentation/use_bloc/account/bloc/account_state.dart';
 
 class AccountBloc extends Bloc<AccountEvent, AccountState> {
-  final AccountCase account;
+  final SignOutUseCase signOutUseCase;
 
-  AccountBloc(this.account) : super(AccountInitState()) {
+  AccountBloc({
+    required this.signOutUseCase
+  }) : super(AccountInitState()) {
     on<AccountSignOutEvent>((event, emit) async {
-      await account.repository.signOut();
+      await signOutUseCase.call();
       emit(AccountSignOutState());
     });
   }

@@ -1,9 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskmanager/core/src/app_style.dart';
-import 'package:taskmanager/domain/repository/Impl/reset_password_repository.dart';
-import 'package:taskmanager/domain/use_case/reset_password_case.dart';
+import 'package:taskmanager/domain/repository/interface/i_auth_repository.dart';
+import 'package:taskmanager/domain/use_case/reset_password_use_case.dart';
 import 'package:taskmanager/presentation/ui_component/app_button.dart';
 import 'package:taskmanager/presentation/ui_component/app_input.dart';
 import 'package:taskmanager/presentation/use_bloc/reset_password/bloc/reset_password_bloc.dart';
@@ -12,6 +11,7 @@ import 'package:taskmanager/presentation/use_bloc/reset_password/bloc/reset_pass
 import 'package:taskmanager/presentation/use_provider/app_loader.dart/notifier/app_loader_provider.dart';
 import 'package:taskmanager/presentation/use_provider/theme_mode/notifier/theme_mode_notifier.dart';
 
+
 class ResetPasswordPage extends StatelessWidget {
   const ResetPasswordPage({super.key});
 
@@ -19,7 +19,7 @@ class ResetPasswordPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return RepositoryProvider(
       create: (context) => ResetPasswordUseCase(
-        repository: ResetPasswordRepository(instance: FirebaseAuth.instance)
+        repository: context.read<IAuthRepository>()
       ),
       child: BlocProvider(
         create: (context) => ResetPasswordBloc(context.read<ResetPasswordUseCase>()),

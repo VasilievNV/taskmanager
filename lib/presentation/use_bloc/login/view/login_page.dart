@@ -1,11 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taskmanager/core/constants/routes.dart';
-import 'package:taskmanager/domain/repository/Impl/login_repository.dart';
-import 'package:taskmanager/domain/use_case/login_case.dart';
+import 'package:taskmanager/domain/repository/interface/i_auth_repository.dart';
+import 'package:taskmanager/domain/use_case/login_with_email_use_case.dart';
 import 'package:taskmanager/presentation/use_bloc/login/bloc/login_state.dart';
 import 'package:taskmanager/presentation/use_bloc/login/bloc/login_bloc.dart';
 import 'package:taskmanager/presentation/ui_component/app_button.dart';
@@ -21,12 +20,18 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (BuildContext context) => LoginUseCase(
-        repository: LoginRepository(instance: FirebaseAuth.instance)
-      ),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(
+          create: (context) => LoginWithEmailUseCase(
+            repository: context.read<IAuthRepository>(), 
+          ),
+        ),
+      ],
       child: BlocProvider(
-        create: (context) => LoginBloc(context.read<LoginUseCase>()),
+        create: (context) => LoginBloc(
+          loginWithEmailUseCase: context.read<LoginWithEmailUseCase>()
+        ),
         child: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
             context.read<AppLoaderNotifier>().setState(state.isLoading);
