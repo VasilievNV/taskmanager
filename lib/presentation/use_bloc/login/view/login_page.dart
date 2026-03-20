@@ -65,8 +65,8 @@ class LoginView extends StatelessWidget {
         ),
         child: BlocBuilder<LoginBloc, LoginState>(
           buildWhen: (previous, current) {
-            return !(current.status == LoginStatus.success || current.status == LoginStatus.editing || 
-              current.status == LoginStatus.loading);
+            const statuses = [LoginStatus.success, LoginStatus.editing, LoginStatus.loading];
+            return !statuses.contains(current.status);
           },
           builder: (context, state) {
             return Column(

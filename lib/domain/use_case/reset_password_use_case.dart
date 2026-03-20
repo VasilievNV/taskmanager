@@ -1,11 +1,12 @@
 import 'package:taskmanager/domain/repository/interface/i_auth_repository.dart';
 
 class ResetPasswordUseCase {
-  final IAuthRepository repository;
+  final IAuthRepository _repository;
 
-  ResetPasswordUseCase({required this.repository});
+  ResetPasswordUseCase({required IAuthRepository repository})
+    : _repository = repository;
 
   Future<void> call(String email) {
-    return repository.sendPasswordResetEmail(email);
+    return _repository.sendPasswordResetEmail(email);
   }
 }

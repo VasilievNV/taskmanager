@@ -65,8 +65,8 @@ class SignUpView extends StatelessWidget {
         ),
         child: BlocBuilder<SignUpBloc, SignUpState>(
           buildWhen: (previous, current) {
-            return !(current.status == ESignUpStatus.editing || 
-              current.status == ESignUpStatus.loading || current.status == ESignUpStatus.success);
+            const statuses = [ESignUpStatus.editing, ESignUpStatus.loading, ESignUpStatus.success];
+            return !statuses.contains(current.status);
           },
           builder: (context, state) {
             return Column(

@@ -1,11 +1,12 @@
 import 'package:taskmanager/domain/repository/interface/i_auth_repository.dart';
 
 class SignOutUseCase {
-  final IAuthRepository repository;
+  final IAuthRepository _repository;
 
-  SignOutUseCase({required this.repository});
+  SignOutUseCase({required IAuthRepository repository})
+    : _repository = repository;
 
   Future<void> call() {
-    return repository.signOut();
+    return _repository.signOut();
   }
 }
