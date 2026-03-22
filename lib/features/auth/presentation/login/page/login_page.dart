@@ -8,8 +8,8 @@ import 'package:taskmanager/features/auth/domain/use_case/login_with_email_use_c
 import 'package:taskmanager/features/auth/domain/use_case/login_with_google_use_case.dart';
 import 'package:taskmanager/features/auth/presentation/login/bloc/login_state.dart';
 import 'package:taskmanager/features/auth/presentation/login/bloc/login_bloc.dart';
-import 'package:taskmanager/core/ui_component/app_button.dart';
-import 'package:taskmanager/core/ui_component/app_input.dart';
+import 'package:taskmanager/core/widgets/app_button.dart';
+import 'package:taskmanager/core/widgets/app_input.dart';
 import 'package:taskmanager/features/auth/presentation/login/bloc/login_event.dart';
 import 'package:taskmanager/core/src/app_style.dart';
 import 'package:taskmanager/use_provider/app_loader.dart/notifier/app_loader_provider.dart';

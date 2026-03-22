@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:taskmanager/core/constants/routes.dart';
 import 'package:taskmanager/features/auth/domain/repositories/interface/i_auth_repository.dart';
 import 'package:taskmanager/features/auth/domain/use_case/sign_out_use_case.dart';
-import 'package:taskmanager/core/ui_component/app_button.dart';
+import 'package:taskmanager/core/widgets/app_button.dart';
 import 'package:taskmanager/features/account/bloc/account_bloc.dart';
 import 'package:taskmanager/features/account/bloc/account_event.dart';
 import 'package:taskmanager/features/account/bloc/account_state.dart';

@@ -12,7 +12,7 @@ class UserModel extends AppUser {
     return UserModel(
       uid: user?.uid,
       email: user?.email,
-      emailVerified: user?.emailVerified ?? false
+      emailVerified: user?.emailVerified
     );
   }
 
@@ -20,7 +20,7 @@ class UserModel extends AppUser {
     return UserModel(
       uid: json['uid'] as String?,
       email: json['email'] as String?,
-      emailVerified: json['email_verified'] ?? false
+      emailVerified: json['email_verified'] as bool?, 
     );
   }
 
@@ -28,7 +28,7 @@ class UserModel extends AppUser {
     return {
       'uid': uid,
       'email': email,
-      'emailVerified': emailVerified,
+      'email_verified': emailVerified,
     };
   }
 }

@@ -18,9 +18,9 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
       final (emailError, isError) = _validateForm(state.emailText);
 
       if (isError) {
-        emit(ResetPasswordInitial(
+        emit(ResetPasswordError(
           emailText: state.emailText,
-          emailError: state.emailError
+          emailError: emailError
         ));
         return;
       }

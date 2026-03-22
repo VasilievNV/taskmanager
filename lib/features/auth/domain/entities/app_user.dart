@@ -3,12 +3,12 @@ import 'package:equatable/equatable.dart';
 class AppUser extends Equatable {
   final String? uid;
   final String? email;
-  final bool emailVerified;
+  final bool? emailVerified;
 
   const AppUser({
     this.uid,
     this.email,
-    this.emailVerified = false
+    this.emailVerified
   });
   
   @override

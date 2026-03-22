@@ -11,7 +11,7 @@ import 'package:taskmanager/features/auth/domain/repositories/interface/i_auth_r
 import 'package:taskmanager/features/auth/presentation/reset_password/page/reset_password_page.dart';
 import 'package:taskmanager/use_provider/app_loader.dart/notifier/app_loader_provider.dart';
 import 'package:taskmanager/use_provider/app_loader.dart/view/app_loader_wrapper.dart';
-import 'package:taskmanager/core/ui_component/navigation_bar.dart';
+import 'package:taskmanager/core/widgets/navigation_bar.dart';
 import 'package:taskmanager/features/account/page/account_page.dart';
 import 'package:taskmanager/features/calendar/calendar_page.dart';
 import 'package:taskmanager/features/chat/chat_page.dart';
