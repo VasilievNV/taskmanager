@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:taskmanager/core/src/colors.dart';
 
 
 abstract class BaseFormField extends TextFormField {
@@ -45,7 +44,7 @@ class AppFormField extends BaseFormField {
       error: error,
       suffixIcon: IconButton(
         onPressed: () => onTapIcon?.call(!obscureText), 
-        icon: obscureText ? Icon(Icons.visibility_off) : Icon(Icons.visibility)
+        icon: obscureText ? Icon(Icons.visibility) : Icon(Icons.visibility_off)
       )
     )
   );
@@ -55,6 +54,10 @@ class AppInputDecoration extends InputDecoration {
   AppInputDecoration({
     String? label,
     String? error,
+    Color? borderColorEnable,
+    Color? borderColorDisable,
+    Color? borderColorError,
+    Color? borderColorFocuded,
     super.suffixIcon,
     super.hint
   }) : super(
@@ -64,7 +67,7 @@ class AppInputDecoration extends InputDecoration {
     errorStyle: TextStyle(height: 1.2),
     helperStyle: TextStyle(height: 1.2),
     floatingLabelBehavior: FloatingLabelBehavior.auto,
-    enabledBorder: OutlineInputBorder(
+    /*enabledBorder: OutlineInputBorder(
       borderSide: BorderSide(width: 1, color: Colors.grey)
     ),
     disabledBorder: OutlineInputBorder(
@@ -78,6 +81,6 @@ class AppInputDecoration extends InputDecoration {
     ),
     focusedErrorBorder: OutlineInputBorder(
       borderSide: BorderSide(width: 2, color: Colors.red)
-    )
+    )*/
   );
 }

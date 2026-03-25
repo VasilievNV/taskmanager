@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:taskmanager/core/src/colors.dart';
-import 'package:taskmanager/use_provider/app_loader.dart/notifier/app_loader_provider.dart';
+import 'package:taskmanager/core/theme/app_color_theme.dart';
+import 'package:taskmanager/core/widgets/app_loader.dart/notifier/app_loader_provider.dart';
 
 class AppLoaderWrapper extends StatelessWidget {
   final Widget? child;
@@ -9,6 +9,8 @@ class AppLoaderWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).extension<AppColorTheme>();
+
     return Stack(
       children: [
         ?child,
@@ -20,10 +22,10 @@ class AppLoaderWrapper extends StatelessWidget {
               child: Scaffold(
                 resizeToAvoidBottomInset: false,
                 backgroundColor: Colors.white.withValues(alpha: 0.8),
-                body: const Center(
+                body: Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
-                    color: colorButtonPrimaryLight,
+                    color: theme?.buttonPrimary,
                   ),
                 ),
               ),

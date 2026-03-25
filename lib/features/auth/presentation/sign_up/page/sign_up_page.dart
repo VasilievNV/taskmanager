@@ -2,15 +2,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:taskmanager/core/constants/routes.dart';
+import 'package:taskmanager/core/constants/route_names.dart';
+import 'package:taskmanager/core/theme/app_color_theme.dart';
 import 'package:taskmanager/features/auth/domain/repositories/interface/i_auth_repository.dart';
 import 'package:taskmanager/features/auth/domain/use_case/sign_up_with_email_use_case.dart';
 import 'package:taskmanager/core/widgets/app_button.dart';
 import 'package:taskmanager/core/widgets/app_input.dart';
 import 'package:taskmanager/core/src/app_style.dart';
-import 'package:taskmanager/core/src/colors.dart';
-import 'package:taskmanager/use_provider/app_loader.dart/notifier/app_loader_provider.dart';
-import 'package:taskmanager/use_provider/theme_mode/notifier/theme_mode_notifier.dart';
+import 'package:taskmanager/core/widgets/app_loader.dart/notifier/app_loader_provider.dart';
 import 'package:taskmanager/features/auth/presentation/sign_up/bloc/sign_up_bloc.dart';
 import 'package:taskmanager/features/auth/presentation/sign_up/bloc/sign_up_event.dart';
 import 'package:taskmanager/features/auth/presentation/sign_up/bloc/sign_up_state.dart';
@@ -54,10 +53,8 @@ class SignUpView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.watch<ThemeModeNotifier>();
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: theme.state.colorBackgroundPrimary,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -88,7 +85,8 @@ class SignUpView extends StatelessWidget {
   }
 
   Widget _header(BuildContext context) {
-    final theme = context.watch<ThemeModeNotifier>().state;
+    final theme = Theme.of(context).extension<AppColorTheme>();
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -96,7 +94,7 @@ class SignUpView extends StatelessWidget {
           "Create Account",
           style: AppStyle.bold(
             fontSize: 18,
-            color: theme.colorTextPrimary
+            color: theme?.textPrimary
           ),
         ),
         const SizedBox(height: 16),
@@ -105,7 +103,7 @@ class SignUpView extends StatelessWidget {
           textAlign: TextAlign.center,
           style: AppStyle.normal(
             fontSize: 12,
-            color: theme.colorTextSecondary,
+            color: theme?.textSecondary,
           ),
         ),
       ],
@@ -154,7 +152,8 @@ class SignUpView extends StatelessWidget {
   }
 
   Widget _buttons(BuildContext context) {
-    final theme = context.watch<ThemeModeNotifier>().state;
+    final theme = Theme.of(context).extension<AppColorTheme>();
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -162,13 +161,13 @@ class SignUpView extends StatelessWidget {
           title: "Sign Up",
           heroTag: "sign_up",
           isExpand: true,
-          backgroundColor: theme.colorButtonPrimary,
-          textColor: theme.colorButtonPrimaryText,
+          backgroundColor: theme?.buttonPrimary,
+          textColor: theme?.buttonPrimaryText,
           onPressed: () {
             context.read<SignUpBloc>().add(SignUpWithPasswordEvent());
           }
         ),
-        _divider(),
+        _divider(context),
         AppButton.google(
           title: "Continue with Google",
           heroTag: "sign_up_google",
@@ -184,7 +183,7 @@ class SignUpView extends StatelessWidget {
               TextSpan(
                 text: "Already have an account? ",
                 style: AppStyle.medium(
-                  color: theme.colorTextPrimary,
+                  color: theme?.textPrimary,
                   fontSize: 13,
                 )
               ),
@@ -194,7 +193,7 @@ class SignUpView extends StatelessWidget {
                   context.goNamed(RouteNames.login);
                 },
                 style: AppStyle.medium(
-                  color: theme.colorTextLink,
+                  color: theme?.textLink,
                   fontSize: 13,
                   decoration: TextDecoration.underline
                 )
@@ -206,7 +205,9 @@ class SignUpView extends StatelessWidget {
     );
   }
 
-  Widget _divider() {
+  Widget _divider(BuildContext context) {
+    final theme = Theme.of(context).extension<AppColorTheme>();
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 25),
       child: Row(
@@ -214,7 +215,7 @@ class SignUpView extends StatelessWidget {
           Expanded(
             child: Divider(
               height: 1,
-              color: colorDivider,
+              color: theme?.divider,
             ),
           ),
           const SizedBox(width: 8),
@@ -222,14 +223,14 @@ class SignUpView extends StatelessWidget {
             "Or sign up with",
             style: AppStyle.normal(
               fontSize: 12,
-              color: colorDivider
+              color: theme?.divider
             ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Divider(
               height: 1,
-              color: colorDivider,
+              color: theme?.divider,
             ),
           )
         ],

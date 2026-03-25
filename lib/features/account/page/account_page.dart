@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:taskmanager/core/constants/routes.dart';
+import 'package:taskmanager/core/constants/route_names.dart';
 import 'package:taskmanager/features/auth/domain/repositories/interface/i_auth_repository.dart';
 import 'package:taskmanager/features/auth/domain/use_case/sign_out_use_case.dart';
 import 'package:taskmanager/core/widgets/app_button.dart';
 import 'package:taskmanager/features/account/bloc/account_bloc.dart';
 import 'package:taskmanager/features/account/bloc/account_event.dart';
 import 'package:taskmanager/features/account/bloc/account_state.dart';
-import 'package:taskmanager/use_provider/app_loader.dart/notifier/app_loader_provider.dart';
-import 'package:taskmanager/use_provider/theme_mode/notifier/theme_mode_notifier.dart';
+import 'package:taskmanager/core/widgets/app_loader.dart/notifier/app_loader_provider.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
@@ -50,9 +49,7 @@ class AccountView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.watch<ThemeModeNotifier>();
     return Scaffold(
-      backgroundColor: theme.state.colorBackgroundPrimary,
       appBar: AppBar(
         title: Text("Account"),
       ),

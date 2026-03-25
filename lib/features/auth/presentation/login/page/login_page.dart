@@ -2,7 +2,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:taskmanager/core/constants/routes.dart';
+import 'package:taskmanager/core/constants/route_names.dart';
+import 'package:taskmanager/core/theme/app_color_theme.dart';
 import 'package:taskmanager/features/auth/domain/repositories/interface/i_auth_repository.dart';
 import 'package:taskmanager/features/auth/domain/use_case/login_with_email_use_case.dart';
 import 'package:taskmanager/features/auth/domain/use_case/login_with_google_use_case.dart';
@@ -12,8 +13,7 @@ import 'package:taskmanager/core/widgets/app_button.dart';
 import 'package:taskmanager/core/widgets/app_input.dart';
 import 'package:taskmanager/features/auth/presentation/login/bloc/login_event.dart';
 import 'package:taskmanager/core/src/app_style.dart';
-import 'package:taskmanager/use_provider/app_loader.dart/notifier/app_loader_provider.dart';
-import 'package:taskmanager/use_provider/theme_mode/notifier/theme_mode_notifier.dart';
+import 'package:taskmanager/core/widgets/app_loader.dart/notifier/app_loader_provider.dart';
 
 
 class LoginPage extends StatelessWidget {
@@ -60,11 +60,8 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.watch<ThemeModeNotifier>();
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: theme.state.colorBackgroundPrimary,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -95,7 +92,8 @@ class LoginView extends StatelessWidget {
   }
 
   Widget _header(BuildContext context) {
-    final theme = context.watch<ThemeModeNotifier>().state;
+    final theme = Theme.of(context).extension<AppColorTheme>();
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -103,7 +101,7 @@ class LoginView extends StatelessWidget {
           "Login",
           style: AppStyle.bold(
             fontSize: 18,
-            color: theme.colorTextPrimary
+            color: theme?.textPrimary
           ),
         ),
         const SizedBox(height: 16),
@@ -112,7 +110,7 @@ class LoginView extends StatelessWidget {
           textAlign: TextAlign.center,
           style: AppStyle.normal(
             fontSize: 12,
-            color: theme.colorTextSecondary,
+            color: theme?.textSecondary,
           ),
         ),
       ],
@@ -148,7 +146,7 @@ class LoginView extends StatelessWidget {
   }
 
   Widget _buttons(BuildContext context) {
-    final theme = context.watch<ThemeModeNotifier>().state;
+    final theme = Theme.of(context).extension<AppColorTheme>();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -157,8 +155,7 @@ class LoginView extends StatelessWidget {
           title: "Login",
           isExpand: true,
           heroTag: "login",
-          backgroundColor: theme.colorButtonPrimary,
-          textColor: theme.colorButtonPrimaryText,
+          backgroundColor: theme?.buttonPrimary,
           onPressed: () {
             context.read<LoginBloc>().add(LoginWithPasswordEvent());
           }
@@ -166,7 +163,7 @@ class LoginView extends StatelessWidget {
         const SizedBox(height: 25),
         AppButton.text(
           title: "Forget password?",
-          color: theme.colorTextLink,
+          color: theme?.textSecondary,
           onPressed: () {
             context.goNamed(RouteNames.resetPassword);
           }
@@ -187,7 +184,7 @@ class LoginView extends StatelessWidget {
               TextSpan(
                 text: "Don't have an account? ",
                 style: AppStyle.medium(
-                  color: theme.colorTextPrimary,
+                  color: theme?.textPrimary,
                   fontSize: 13,
                 )
               ),
@@ -197,7 +194,7 @@ class LoginView extends StatelessWidget {
                   context.goNamed(RouteNames.signUp);
                 },
                 style: AppStyle.medium(
-                  color: theme.colorTextLink,
+                  color: theme?.textLink,
                   fontSize: 13,
                   decoration: TextDecoration.underline
                 )

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:taskmanager/core/src/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 
@@ -18,7 +17,7 @@ class AppButton {
         hoverElevation: 0,
         highlightElevation: 0,
         heroTag: heroTag,
-        backgroundColor: backgroundColor ?? colorButtonPrimaryLight,
+        backgroundColor: backgroundColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
         ),

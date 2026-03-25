@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskmanager/core/src/app_style.dart';
+import 'package:taskmanager/core/theme/app_color_theme.dart';
 import 'package:taskmanager/features/auth/domain/repositories/interface/i_auth_repository.dart';
 import 'package:taskmanager/features/auth/domain/use_case/reset_password_use_case.dart';
 import 'package:taskmanager/core/widgets/app_button.dart';
@@ -8,8 +9,7 @@ import 'package:taskmanager/core/widgets/app_input.dart';
 import 'package:taskmanager/features/auth/presentation/reset_password/bloc/reset_password_bloc.dart';
 import 'package:taskmanager/features/auth/presentation/reset_password/bloc/reset_password_event.dart';
 import 'package:taskmanager/features/auth/presentation/reset_password/bloc/reset_password_state.dart';
-import 'package:taskmanager/use_provider/app_loader.dart/notifier/app_loader_provider.dart';
-import 'package:taskmanager/use_provider/theme_mode/notifier/theme_mode_notifier.dart';
+import 'package:taskmanager/core/widgets/app_loader.dart/notifier/app_loader_provider.dart';
 
 
 class ResetPasswordPage extends StatelessWidget {
@@ -42,11 +42,9 @@ class ResetPasswordView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.watch<ThemeModeNotifier>();
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: theme.state.colorBackgroundPrimary,
+      //backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: Text("Back to Login"),
       ),
@@ -56,6 +54,7 @@ class ResetPasswordView extends StatelessWidget {
         },
         builder: (context, state) {
           final bloc = context.read<ResetPasswordBloc>();
+          final theme = Theme.of(context).extension<AppColorTheme>();
 
           return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(
@@ -69,13 +68,17 @@ class ResetPasswordView extends StatelessWidget {
                 Text(
                   "Reset password",
                   style: AppStyle.bold(
-                    fontSize: 20
+                    fontSize: 20,
+                    color: theme?.textPrimary
                   ),
                 ),
                 const SizedBox(height: 20),
                 Text(
                   "Enter your email address and we'll send you a link to reset your password",
-                  style: AppStyle.normal(fontSize: 14),
+                  style: AppStyle.normal(
+                    fontSize: 14,
+                    color: theme?.textSecondary
+                  ),
                 ),
                 const SizedBox(height: 15),
                 AppFormField.email(
@@ -87,6 +90,7 @@ class ResetPasswordView extends StatelessWidget {
                 AppButton.primary(
                   isExpand: true,
                   title: "Send Reset Link",
+                  backgroundColor: theme?.buttonPrimary,
                   onPressed: () => bloc.add(ResetPasswordSendEmailEvent())
                 )
               ],
