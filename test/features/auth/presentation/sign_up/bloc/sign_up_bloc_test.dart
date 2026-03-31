@@ -1,8 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:taskmanager/core/results/result.dart';
 import 'package:taskmanager/features/auth/data/models/user_model.dart';
-import 'package:taskmanager/features/auth/domain/entities/app_auth_credential.dart';
 import 'package:taskmanager/features/auth/domain/entities/app_error.dart';
 import 'package:taskmanager/features/auth/domain/use_case/sign_up_with_email_use_case.dart';
 import 'package:taskmanager/features/auth/presentation/sign_up/bloc/sign_up_bloc.dart';
@@ -48,7 +48,7 @@ void main() {
       'emits [loading(true), loading(false), success] when sign up is successful',
       build: () {
         when(() => mockUseCase.call(any(), any()))
-            .thenAnswer((_) async => AppAuthCredential(user: UserModel(uid: '123')));
+            .thenAnswer((_) async => Success(UserModel(uid: '123')));
         return signUpBloc;
       },
       seed: () => SignUpState(
@@ -72,9 +72,7 @@ void main() {
       'emits error status when usecase returns failure',
       build: () {
         when(() => mockUseCase.call(any(), any()))
-            .thenAnswer((_) async => AppAuthCredential(
-                  error: AppError(message: 'Email already exists'),
-                ));
+            .thenAnswer((_) async => Failure(AppError(message: 'Email already exists')));
         return signUpBloc;
       },
       seed: () => SignUpState(

@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskmanager/core/theme/app_color_theme.dart';
 import 'package:taskmanager/features/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:taskmanager/features/auth/domain/repositories/Impl/auth_repository.dart';
+import 'package:taskmanager/features/auth/data/repositories/Impl/auth_repository.dart';
 import 'package:taskmanager/features/auth/domain/repositories/interface/i_auth_repository.dart';
 import 'package:taskmanager/core/widgets/app_loader.dart/notifier/app_loader_provider.dart';
 import 'package:taskmanager/core/widgets/app_loader.dart/view/app_loader_wrapper.dart';

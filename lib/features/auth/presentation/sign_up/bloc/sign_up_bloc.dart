@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskmanager/core/results/result.dart';
 import 'package:taskmanager/core/utils/extensions.dart';
 import 'package:taskmanager/features/auth/domain/use_case/sign_up_with_email_use_case.dart';
 import 'package:taskmanager/features/auth/presentation/sign_up/bloc/sign_up_event.dart';
@@ -50,21 +51,23 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         isLoading: true
       ));
 
-      final credential = await signUpWithEmailUseCase.call(state.emailText, state.passwordText);
+      final result = await signUpWithEmailUseCase.call(state.emailText, state.passwordText);
 
       emit(state.copyWith(
         status: ESignUpStatus.loading,
         isLoading: false
       ));
 
-      if (credential.user != null) {
-        emit(state.copyWith(status: ESignUpStatus.success));
-      } else {
-        emit(state.copyWith(
-          status: ESignUpStatus.error,
-          emailError: credential.error?.message
-        ));
-      }
+      switch (result) {
+        case Success():
+          emit(state.copyWith(status: ESignUpStatus.success));
+          break;
+        case Failure(:final error):
+          emit(state.copyWith(
+            status: ESignUpStatus.error,
+            emailError: error.message
+          ));
+        }
     });
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskmanager/core/results/result.dart';
 import 'package:taskmanager/core/utils/extensions.dart';
 import 'package:taskmanager/features/auth/domain/use_case/login_with_email_use_case.dart';
 import 'package:taskmanager/features/auth/domain/use_case/login_with_google_use_case.dart';
@@ -52,33 +53,38 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         isLoading: true
       ));
 
-      final credential = await loginWithEmailUseCase.call(state.emailText, state.passwordText);
+      final result = await loginWithEmailUseCase.call(state.emailText, state.passwordText);
 
       emit(state.copyWith(
         status: LoginStatus.loading,
         isLoading: false
       ));
 
-      if (credential.user != null) {
-        emit(state.copyWith(status: LoginStatus.success));
-      } else {
-        emit(state.copyWith(
-          status: LoginStatus.error,
-          emailError: credential.error?.message,
-        ));
+      switch (result) {
+        case Success():
+          emit(state.copyWith(status: LoginStatus.success));
+          break;
+        case Failure(:final error):
+          emit(state.copyWith(
+            status: LoginStatus.error,
+            emailError: error.message,
+          ));
+          break;
       }
     });
 
     on<LoginWithGoogleEvent>((event, emit) async {
-      final credential = await loginWithGoogleUseCase.call();
+      final result = await loginWithGoogleUseCase.call();
 
-      if (credential.user != null) {
-        emit(state.copyWith(status: LoginStatus.success));
-      } else {
-        emit(state.copyWith(
-          status: LoginStatus.error,
-          errorMessage: credential.error?.message,
-        ));
+      switch (result) {
+        case Success():
+          emit(state.copyWith(status: LoginStatus.success));
+          break;
+        case Failure(:final error):
+          emit(state.copyWith(
+            status: LoginStatus.error,
+            errorMessage: error.message,
+          ));
       }
     });
   }

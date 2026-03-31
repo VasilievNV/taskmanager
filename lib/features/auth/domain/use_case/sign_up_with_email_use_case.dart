@@ -1,4 +1,5 @@
-import 'package:taskmanager/features/auth/domain/entities/app_auth_credential.dart';
+import 'package:taskmanager/core/results/result.dart';
+import 'package:taskmanager/features/auth/domain/entities/app_error.dart';
 import 'package:taskmanager/features/auth/domain/repositories/interface/i_auth_repository.dart';
 
 class SignUpWithEmailUseCase {
@@ -7,7 +8,7 @@ class SignUpWithEmailUseCase {
   SignUpWithEmailUseCase({required IAuthRepository repository})
     : _repository = repository;
 
-  Future<AppAuthCredential> call(String email, String password) {
+  Future<Result<Object, AppError>> call(String email, String password) {
     return _repository.signUpWithPassword(email, password);
   }
 }

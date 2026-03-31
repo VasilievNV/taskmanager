@@ -1,8 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:taskmanager/core/results/result.dart';
 import 'package:taskmanager/features/auth/data/models/user_model.dart';
-import 'package:taskmanager/features/auth/domain/entities/app_auth_credential.dart';
 import 'package:taskmanager/features/auth/domain/entities/app_error.dart';
 import 'package:taskmanager/features/auth/domain/use_case/login_with_email_use_case.dart';
 import 'package:taskmanager/features/auth/domain/use_case/login_with_google_use_case.dart';
@@ -10,7 +10,7 @@ import 'package:taskmanager/features/auth/presentation/login/bloc/login_bloc.dar
 import 'package:taskmanager/features/auth/presentation/login/bloc/login_event.dart';
 import 'package:taskmanager/features/auth/presentation/login/bloc/login_state.dart';
 
-// Мокаем UseCases
+
 class MockLoginWithEmailUseCase extends Mock implements LoginWithEmailUseCase {}
 class MockLoginWithGoogleUseCase extends Mock implements LoginWithGoogleUseCase {}
 
@@ -66,7 +66,7 @@ void main() {
         loginBloc.add(LoginEditPasswordEvent('123456'));
         
         when(() => mockEmailUseCase.call('valid@mail.com', '123456'))
-            .thenAnswer((_) async => AppAuthCredential(user: UserModel(uid: '123')));
+            .thenAnswer((_) async => Success(UserModel(uid: '123')));
         return loginBloc;
       },
       skip: 2, // Пропускаем первые два стейта от LoginEdit...Event
@@ -89,9 +89,7 @@ void main() {
         loginBloc.add(LoginEditPasswordEvent('123456'));
         
         when(() => mockEmailUseCase.call(any(), any()))
-            .thenAnswer((_) async => AppAuthCredential(
-                  error: AppError(message: 'Wrong password'),
-                ));
+            .thenAnswer((_) async => Failure(AppError(message: 'Wrong password')));
         return loginBloc;
       },
       skip: 2,
